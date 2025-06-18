@@ -1,0 +1,5 @@
+python /oneaxiscontrol/__pycache__
+python /oneaxiscontrol.egg-info
+python /control1
+python /system-site-packages
+build/*
