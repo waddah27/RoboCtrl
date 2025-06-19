@@ -34,7 +34,7 @@ public:
       
     
 private:
-    // struct TrajectoryState * trajectory;
+    // struct TrajectoryState * trajectory; // doing raw pointer requires new in constructor and delete in destructor 
     std::unique_ptr<struct TrajectoryState> trajectory;  // Smart pointer instead of raw pointer
 };
 

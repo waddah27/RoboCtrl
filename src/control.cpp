@@ -1,8 +1,9 @@
 #include "control.h"
 #include "trajectory.hh"
 #include <iostream>
+TrajectoryState trajectory(0.0, 1.0, 0.0, 0.0);
 
-static TrajectoryPlanner planner;
+static TrajectoryPlanner planner(trajectory);
 
 void initialize_control_system() {
     std::cout << "TODO -- Control system initialize" << std::endl;
