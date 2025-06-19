@@ -6,7 +6,7 @@ int main() {
     send_motion_command(10.0, 2.0);
     
     while (true) {
-        double pos = get_cucd rrent_position();
+        double pos = get_current_position();
         std::cout << "Current position: " << pos << std::endl;
         if (pos >= 9.9) break;
     }
