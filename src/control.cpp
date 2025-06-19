@@ -3,19 +3,18 @@
 #include <iostream>
 
 static TrajectoryPlanner planner;
-static double current_position = 0.0;
 
 void initialize_control_system() {
     std::cout << "TODO -- Control system initialize" << std::endl;
 }
 
-void send_motion_command(double position, double velocity) {
+void send_motion_command(double position, double velocity, double step) {
     std::cout << "Received command - Position: " << position 
               << ", Velocity: " << velocity << std::endl;
-    planner.plan_trajectory(position, velocity);
+    planner.plan_trajectory(position, velocity, step);
     planner.print_summary();
 }
 
 double get_current_position() {
-    return current_position++;
+    return planner.get_next_setpoint();
 }
