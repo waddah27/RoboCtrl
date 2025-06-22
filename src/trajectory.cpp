@@ -2,25 +2,20 @@
 #include <cmath>
 #include <iostream>
 
-// TrajectoryPlanner::~TrajectoryPlanner(){
-//     std::cout<<"Destroy the TP object\n"<<std::endl;
-//     // delete trajectory; // only if it was a simple pointer not smart 
-// }
-
 // TrajectoryState constructor
 TrajectoryState::TrajectoryState(double xt, double xd, double vmax, double step)
     : x_t(xt), x_d(xd), v_max(vmax), step(step) {}
 
 // TrajectoryPlanner constructors
-TrajectoryPlanner::TrajectoryPlanner()
+TrajectoryLinearStepPlanner::TrajectoryLinearStepPlanner()
     : trajectory(std::make_unique<TrajectoryState>()) {}
 
-TrajectoryPlanner::TrajectoryPlanner(TrajectoryState Traj)
+TrajectoryLinearStepPlanner::TrajectoryLinearStepPlanner(TrajectoryState Traj)
     : trajectory(std::make_unique<TrajectoryState>(Traj.x_t, Traj.x_d, Traj.v_max, Traj.step)) {}
 
-TrajectoryPlanner::~TrajectoryPlanner() = default;
+TrajectoryLinearStepPlanner::~TrajectoryLinearStepPlanner() = default;
 
-void TrajectoryPlanner::plan_trajectory(double target_pos, double max_vel, double step) {
+void TrajectoryLinearStepPlanner::plan_trajectory(double target_pos, double max_vel, double step) {
     trajectory->step = step;
     trajectory->x_d = target_pos;
     trajectory->v_max = max_vel;
@@ -28,7 +23,7 @@ void TrajectoryPlanner::plan_trajectory(double target_pos, double max_vel, doubl
               << " with max velocity " << max_vel << std::endl;
 }
 
-double TrajectoryPlanner::get_next_setpoint() {
+double TrajectoryLinearStepPlanner::get_next_setpoint() {
     // Simple linear trajectory for demonstration
     if (trajectory->x_t < trajectory->x_d - trajectory->step) {
         trajectory->x_t += trajectory->step;
@@ -39,8 +34,60 @@ double TrajectoryPlanner::get_next_setpoint() {
 }
 
 
-void TrajectoryPlanner::print_summary(){
+void TrajectoryLinearStepPlanner::print_summary(){
     std::cout <<"planner.trajectory->x_d = "<<trajectory->x_d<<std::endl;
     std::cout <<"planner.trajectory->x_t = "<<trajectory->x_t<<std::endl;
     std::cout <<"planner.trajectory->v_max = "<<trajectory->v_max<<std::endl;
 }
+
+
+// TrajectoryTrapezoidalVelocityProfilePlanner constructors
+TrajectoryTrapezoidalVelocityProfilePlanner::TrajectoryTrapezoidalVelocityProfilePlanner(){}
+TrajectoryTrapezoidalVelocityProfilePlanner::TrajectoryTrapezoidalVelocityProfilePlanner(double x_0, double x_d, double v_max, double a_max, double dt)
+: x_0(x_0), x_d(x_d), v_max(v_max), a_max(a_max), dt(dt) {
+    dtg = x_d - x_0;
+    t_acc = v_max/a_max;
+    t_dec = v_max/a_max;
+    dtg_acc = 0.5 * a_max * t_acc * t_acc;
+    dtg_dec = 0.5 * a_max * t_dec * t_dec;
+    double dtg_abs = std::abs(dtg);
+    t_cr = (dtg_abs - dtg_acc - dtg_dec) / v_max;
+    t_total = t_acc + t_dec + t_cr;
+
+
+}
+
+//TrajectoryTrapezoidalVelocityProfilePlanner destructor 
+TrajectoryTrapezoidalVelocityProfilePlanner::~TrajectoryTrapezoidalVelocityProfilePlanner() = default;
+
+bool TrajectoryTrapezoidalVelocityProfilePlanner::is_done() const {
+    return done;
+}
+
+double TrajectoryTrapezoidalVelocityProfilePlanner::update(){
+    double dir = dtg > 0 ? 1:-1;
+    double t1 = t_acc, t2 = t1+t_cr, t3 = t_total;
+    
+    if (t<=t_acc){
+        x_t = x_0 + dir * 0.5 * a_max * t*t;
+        
+    }
+    else if(t<=t_acc+t_cr){
+        // double t1 = t-t_acc;
+        x_t = x_0 + dir * (dtg_acc + v_max*(t-t1));
+    }
+    else if(t<t_total){
+        // double t2 = t-(t_acc+t_cr);
+        x_t = x_0 + dir *(dtg_acc + v_max*(t2-t1) + 0.5*a_max*(t-t2)*(t-t2));
+
+    }
+    else{
+        done = true;
+        x_t = x_d;
+        
+    }
+
+    t+=dt;
+    return x_t;
+}
+
