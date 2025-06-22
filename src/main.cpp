@@ -6,13 +6,14 @@
 int main() {
     initialize_control_system();
     send_motion_command(XD, vMax, STEP);
-    
+    bool done = false;
     while (true) {
         double pos = get_current_position();
-        double pos_trapz = get_current_pos_trapz();
+        double pos_trapz = get_current_pos_trapz(done);
         std::cout << "Current position: " << pos << std::endl;
         std::cout << "Current position trapez: " << pos_trapz << std::endl;
-        if (pos >= XD - STEP) break;
+        if (pos >= XD - STEP) break; // stop criteria for simple linear step planner 
+        if (done) break; // stop criteria for trapezoidal velocity profile planner 
     }
     
     return 0;

@@ -82,6 +82,7 @@ double TrajectoryTrapezoidalVelocityProfilePlanner::update(){
 
     }
     else{
+        // std::cout<<"DONE!"<<std::endl;
         done = true;
         x_t = x_d;
         
