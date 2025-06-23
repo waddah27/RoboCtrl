@@ -11,4 +11,4 @@ make
 2. run the `./oneaxis_main` binary file ...
 3. TODO  
 
-To review how things work, review `docs/`
+For mathematical basis of what we are doing here, please review `docs/`
