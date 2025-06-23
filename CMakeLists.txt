@@ -21,6 +21,20 @@ target_include_directories(roboctrl
     ${Python_INCLUDE_DIRS}
 )
 
+# for binding c++ with Python 
+find_package(pybind11 REQUIRED)
+
+pybind11_add_module(trajectory MODULE
+    src/trajectory_pybind.cpp
+    src/trajectory.cpp
+)
+
+target_include_directories(trajectory PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+set_target_properties(trajectory PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/python/roboctrl
+)
+
 # Link Python
 target_link_libraries(roboctrl ${Python_LIBRARIES})
 

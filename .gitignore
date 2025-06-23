@@ -1,3 +1,4 @@
+python/roboctrl/
 python/roboctrl/__pycache__
 python/roboctrl.egg-info
 python/control1/*
