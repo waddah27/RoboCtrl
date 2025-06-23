@@ -3,7 +3,9 @@
 #define TRAJECTORY_H
 #include<iostream>
 #include <memory>
+#include<vector>
 
+#define NDoF = 3 // number of DoFs/joints/axes...TODO CHECK LATER
 // some default parameters to insure common configs among all trajectory planners
 #define STEP 0.05
 #define vMax 10
@@ -50,7 +52,8 @@ private:
 
 
 /*
-Trajectory planner based on trapezoidal velocity profile algorithm.
+Scalar Trajectory planner based on trapezoidal velocity profile algorithm.
+
 inputs:
     double x_0  : initial pos
     double x_d  : desired pos (target)
@@ -68,6 +71,8 @@ inputs:
             t0  t1                    t2  t3
              |___|________t_cr________|___|
             t_acc                       t_dec
+
+Called by: TrapezoidalPlannerND 
 */
 class TrapezoidalPlanner{
 
@@ -99,6 +104,40 @@ class TrapezoidalPlanner{
         bool triangle = false; // if true, then no const velocity phase, i.e., t_cr = 0.0
 
 
+};
+
+/*
+Multi-dimensional Trajectory planner based on trapezoidal velocity profile algorithm.
+
+inputs:
+    std::vector<double> s_0  : initial pos vector
+    std::vector<double> s_d  : desired pos (target) vector
+    double v_max: max velocity
+    double a_max: max acceleration
+    double dt   : time step 
+    bool triangle: if true, then no cruise phase ... velocity starts decreasing immediately after reaching vmax
+*/
+class TrapezoidalPlannerND {
+public:
+    TrapezoidalPlannerND();
+    TrapezoidalPlannerND(const std::vector<double>& s_0,const std::vector<double>& s_d,
+                         double v_max, double a_max, double dt, bool triangle);
+    ~TrapezoidalPlannerND();
+    std::vector<double> update();
+    bool is_done() const;
+
+private:
+    std::vector<double> s_0;  // vector of initial positions for N DoFs
+    std::vector<double> s_d;  // vector of target positions for N DoFs
+    std::vector<double> dirs;
+    TrapezoidalPlanner scalar_planner;
+
+    // //??
+    // double v_max = 0.0;
+    // double a_max = 0.0;
+    // double dt = 0.0;
+    // bool done = false;  
+    // bool triangle = false;
 };
 
 #endif // TRAJECTORY_H

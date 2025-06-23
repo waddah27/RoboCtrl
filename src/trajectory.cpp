@@ -92,3 +92,45 @@ double TrapezoidalPlanner::update(){
     return x_t;
 }
 
+
+TrapezoidalPlannerND::TrapezoidalPlannerND(){}
+TrapezoidalPlannerND::TrapezoidalPlannerND(const std::vector<double>& s_0,const std::vector<double>& s_d,
+                                            double v_max, double a_max, double dt, bool triangle)
+                                            :s_0(s_0), s_d(s_d)
+{
+    if (s_d.size()!=s_0.size()) throw std::invalid_argument("Start and target must have same dimension.");
+    double ds = 0.0;
+    dirs.resize(s_0.size());
+    for (size_t i =0; i<s_0.size();++i){
+        dirs[i] = s_d[i] - s_0[i];
+        ds+=dirs[i]*dirs[i]; // \sum_{i=0}^{N}{j_{id}-j_{i0}}
+    }
+    
+    ds = std::sqrt(ds); // \Delta{s} = sqrt(\sum_{i=0}^{N}{j_{id}-j_{i0}})
+
+    for (auto & d: dirs) d/=ds; //Normalize direction factor i.e., \Delta{j}_i/\Delta{s} term in the parametrized path equation
+
+    scalar_planner = TrapezoidalPlanner(0.0, ds, v_max, a_max, dt, false);
+    
+}
+
+TrapezoidalPlannerND::~TrapezoidalPlannerND() = default;
+
+std::vector<double> TrapezoidalPlannerND::update(){
+    double s = scalar_planner.update(); // s(t)
+    
+    std::vector<double> j(s_0.size()); // here is the container to hold the current positions for all DoFs/joints/axes
+    
+    for (size_t i=0;i<s_0.size();++i){
+        j[i] = s_0[i] + dirs[i]*s; // the final equation j_{i}(t) = j_{i0} + \Delta{j}_i/\Delta{s}*s(t); 
+        //where s_0[i] here refers to j_{i0} in the equation
+
+    }
+    return j;
+
+
+}
+
+bool TrapezoidalPlannerND::is_done() const{
+    return scalar_planner.is_done();
+}
