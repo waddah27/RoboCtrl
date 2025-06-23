@@ -1,6 +1,7 @@
-python /oneaxiscontrol/__pycache__
-python /oneaxiscontrol.egg-info
-python /control1
-python /system-site-packages
+python/roboctrl/__pycache__
+python/roboctrl.egg-info
+python/control1/*
+python/system-site-packages
+pyt
 build/*
 .vscode/*
