@@ -47,7 +47,15 @@ private:
 
 
 /*
-Trajectory planner based on trapezoidal velocity profile algorithm
+Trajectory planner based on trapezoidal velocity profile algorithm.
+inputs:
+    double x_0,//initial pos
+    double x_d, // desired pos (target)
+    double v_max, //max velocity
+    double a_max, // max acceleration
+    double dt, // time step 
+    bool triangle: if true, then no cruise phase ... velocity starts decreasing immediately after reaching vmax
+
 
                     vmax
              |   |--------------------|   |
@@ -63,7 +71,7 @@ class TrajectoryTrapezoidalVelocityProfilePlanner{
     public:
     
     TrajectoryTrapezoidalVelocityProfilePlanner();
-    TrajectoryTrapezoidalVelocityProfilePlanner(double x_0,double x_d, double v_max, double a_max, double dt);
+    TrajectoryTrapezoidalVelocityProfilePlanner(double x_0,double x_d, double v_max, double a_max, double dt, bool triangle);
     
     ~TrajectoryTrapezoidalVelocityProfilePlanner();
     double update();
@@ -85,6 +93,7 @@ class TrajectoryTrapezoidalVelocityProfilePlanner{
         double t =0.0; // current time instance
         double dt = 0.0; // time step 
         bool done = false; // flag indicates complete motion 
+        bool triangle = false; // if true, then no const velocity phase, i.e., t_cr = 0.0
 
 
 };

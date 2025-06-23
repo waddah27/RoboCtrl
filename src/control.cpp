@@ -6,7 +6,7 @@
 TrajectoryState trajectory(X0, XD, vMax, STEP);
 
 static TrajectoryLinearStepPlanner planner(trajectory);
-static TrajectoryTrapezoidalVelocityProfilePlanner plannerTrapz(X0, XD, vMax, aMax, STEP);
+static TrajectoryTrapezoidalVelocityProfilePlanner plannerTrapz(X0, XD, vMax, aMax, STEP, false);
 
 void initialize_control_system() {
     std::cout << "TODO -- Control system initialize" << std::endl;

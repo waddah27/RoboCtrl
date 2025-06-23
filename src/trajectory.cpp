@@ -43,15 +43,15 @@ void TrajectoryLinearStepPlanner::print_summary(){
 
 // TrajectoryTrapezoidalVelocityProfilePlanner constructors
 TrajectoryTrapezoidalVelocityProfilePlanner::TrajectoryTrapezoidalVelocityProfilePlanner(){}
-TrajectoryTrapezoidalVelocityProfilePlanner::TrajectoryTrapezoidalVelocityProfilePlanner(double x_0, double x_d, double v_max, double a_max, double dt)
-: x_0(x_0), x_d(x_d), v_max(v_max), a_max(a_max), dt(dt) {
+TrajectoryTrapezoidalVelocityProfilePlanner::TrajectoryTrapezoidalVelocityProfilePlanner(double x_0, double x_d, double v_max, double a_max, double dt, bool triangle)
+: x_0(x_0), x_d(x_d), v_max(v_max), a_max(a_max), dt(dt), triangle(triangle) {
     dtg = x_d - x_0;
     t_acc = v_max/a_max;
     t_dec = v_max/a_max;
     dtg_acc = 0.5 * a_max * t_acc * t_acc;
     dtg_dec = 0.5 * a_max * t_dec * t_dec;
     double dtg_abs = std::abs(dtg);
-    t_cr = (dtg_abs - dtg_acc - dtg_dec) / v_max;
+    t_cr = triangle ? 0.0 : (dtg_abs - dtg_acc - dtg_dec) / v_max;
     t_total = t_acc + t_dec + t_cr;
 
 
