@@ -22,15 +22,18 @@ struct TrajectoryState
           
 };
 
-/* Simplest trajectory planner - linear step*/
-class TrajectoryLinearStepPlanner {
+
+/* 
+Simplest trajectory planner based on linear step -- no control for velocity, nor acceleration, constant predifined step only
+*/
+class LinearStepPlanner {
 public:
     // Constructors
-    TrajectoryLinearStepPlanner();  // Default
-    TrajectoryLinearStepPlanner(struct TrajectoryState trajectory);  // Parameterized
+    LinearStepPlanner();  // Default
+    LinearStepPlanner(struct TrajectoryState trajectory);  // Parameterized
     
     // Destructor
-    ~TrajectoryLinearStepPlanner();
+    ~LinearStepPlanner();
 
     void plan_trajectory(double target_position, double max_velocity, double step);
     double get_next_setpoint();
@@ -49,11 +52,11 @@ private:
 /*
 Trajectory planner based on trapezoidal velocity profile algorithm.
 inputs:
-    double x_0,//initial pos
-    double x_d, // desired pos (target)
-    double v_max, //max velocity
-    double a_max, // max acceleration
-    double dt, // time step 
+    double x_0  : initial pos
+    double x_d  : desired pos (target)
+    double v_max: max velocity
+    double a_max: max acceleration
+    double dt   : time step 
     bool triangle: if true, then no cruise phase ... velocity starts decreasing immediately after reaching vmax
 
 
@@ -66,14 +69,14 @@ inputs:
              |___|________t_cr________|___|
             t_acc                       t_dec
 */
-class TrajectoryTrapezoidalVelocityProfilePlanner{
+class TrapezoidalPlanner{
 
     public:
     
-    TrajectoryTrapezoidalVelocityProfilePlanner();
-    TrajectoryTrapezoidalVelocityProfilePlanner(double x_0,double x_d, double v_max, double a_max, double dt, bool triangle);
+    TrapezoidalPlanner();
+    TrapezoidalPlanner(double x_0,double x_d, double v_max, double a_max, double dt, bool triangle);
     
-    ~TrajectoryTrapezoidalVelocityProfilePlanner();
+    ~TrapezoidalPlanner();
     double update();
     bool is_done() const;
 
